@@ -1,0 +1,36 @@
+{
+  "name": "hexo-site",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "hexo generate",
+    "clean": "hexo clean",
+    "deploy": "hexo deploy",
+    "server": "hexo server",
+    "upload": "pscp.exe -pw Wch961213! -P 22 -r source root@101.42.27.127:/www/wwwroot/MyWeb/"
+  },
+  "hexo": {
+    "version": "6.3.0"
+  },
+  "dependencies": {
+    "async": "^3.2.4",
+    "events": "^3.3.0",
+    "fs": "0.0.1-security",
+    "hexo": "^6.3.0",
+    "hexo-generator-archive": "^2.0.0",
+    "hexo-generator-category": "^2.0.0",
+    "hexo-generator-index": "^3.0.0",
+    "hexo-generator-tag": "^2.0.0",
+    "hexo-renderer-ejs": "^2.0.0",
+    "hexo-renderer-marked": "^6.0.0",
+    "hexo-renderer-stylus": "^2.1.0",
+    "hexo-server": "^3.0.0",
+    "hexo-theme-landscape": "^0.0.3",
+    "path": "^0.12.7",
+    "ssh2": "^1.11.0",
+    "util": "^0.12.5"
+  },
+  "devDependencies": {
+    "gulp": "^4.0.2"
+  }
+}

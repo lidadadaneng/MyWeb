@@ -3,7 +3,7 @@ const {MakeRemoteDir, Shell, UploadDir, control} = require('./ssh')
 
 const server = {host: "101.42.27.127", username: "root", password: "Wch961213!"};
 //替换局部文档的文件
-const studyModule = '浏览器渲染'
+const studyModule = 'webpack5'
 
 const {todoDir} = MakeRemoteDir(server, 'source', '/www/wwwroot/MyWeb/source/')
 console.log('正在检查文件夹是否缺失，如果缺失进行创建...')

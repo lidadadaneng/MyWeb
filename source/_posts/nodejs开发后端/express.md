@@ -1,11 +1,12 @@
 ---
-title: 01
+title: express
 date: 2024-01-10 10:42:51
 categories:
 - 后端
 - express
 tags:
 - express
+- nodejs
 typora-root-url: ..\..
 ---
 
@@ -256,14 +257,15 @@ app.use('/usr', mw1, mw2, (req,res)=>{
 ③调用 app.use () 注册并使用中间件
 注意：Express 内置的 express.urlencoded 中间件，就是基于 body parser 这个第三方中间件进一步封装出来的。
 
-### 接口跨域
+## 接口跨域
 
 刚才编写的 GET 和 POST 接口，存在一个很严重的问题： 不支持跨域请求 。
 解决接口跨域问题的方案主要有两种：
 ① CORS （主流的解决方案 推荐使用）
 ② JSONP （有缺陷的解决方案：只支持 GET 请求）
 
-#### 使用 cors 中间件 解决跨域问题
+### 使用 cors 中间件 解决跨域问题
+
 cors是 Express 的一个第三方中间件。通过安装和配置 cors 中间件，可以很方便地解决跨域问题。
 使用步骤分为如下3 步：
 
@@ -281,7 +283,8 @@ CORS (Cross Origin Resource Sharing ，跨域资源共享）由一系列 HTTP �
 
 ![image-20240111153200412](/image/express/image-20240111153200412.png)
 
-####  CORS 的注意事项
+#### CORS 的注意事项
+
 ① CORS 主要在 服务器端 进行配置。客户端浏览器 无须做任何额外的配置 ，即可请求开启了 CORS 的接口。
 ② CORS 在浏览器中 有兼容性 。只有支持 XMLHttpRequest Level2 的浏览器，才能正常访问开启了 CORS 的服务端接口（例如： IE10+ 、 Chrome4+ 、FireFox3.5+）。
 
@@ -300,9 +303,9 @@ CORS (Cross Origin Resource Sharing ，跨域资源共享）由一系列 HTTP �
 如果指定了Access-Control-Allow-Origin 字段的值为 通配符 *，表示允许来自任何域的请求
 
 #### CORS 响应头部 Access-Control-Allow-Headers
+
 默认情况下，CORS 仅 支持 客户端向服务器 发送如下的 9 个 请求头
-Accept、 Accept Language 、 Content-Language 、 DPR 、 Downlink 、 Save-Data 、 Viewport-Width 、 Width 、
-Content-Type （值仅限于 text/plain 、 multipart/form-data 、 application/x-www-form-urlencoded 三者之一）
+Accept、 Accept Language 、 Content-Language 、 DPR 、 Downlink 、 Save-Data 、 Viewport-Width 、 Width、Content-Type （值仅限于 text/plain 、 multipart/form-data 、 application/x-www-form-urlencoded 三者之一）
 如果客户端向服务器发送了额外的请求头信息 ，则需要在 服务器端 ，通过 Access-Control-Allow-Headers 对额外的请求头进行声明 ，否则这次请求会失败
 
 ![image-20240111153719301](/image/express/image-20240111153719301.png)
@@ -315,3 +318,70 @@ Content-Type （值仅限于 text/plain 、 multipart/form-data 、 application/
 示例代码如下：
 
 ![image-20240111153809529](/image/express/image-20240111153809529.png)
+
+#### CORS 请求的分类
+
+客户端在请求
+CORS 接口时，根据 请求方式 和 请求头 的不同，可以将 CORS 的请求分为 两大类 ，分别是
+① 简单请求
+② 预检请求
+
+>简单请求
+>
+>同时满足以下两大条件的请求，就属于简单请求：
+>①请求方式 GET 、 POST 、 HEAD 三者之一
+>②HTTP 头部信息 不超过以下几种字段： 无自定义头部字段 、 Accept 、 Accept-Language 、 Content Language 、 DPR 、Downlink 、 Save-Data 、 Viewport-Width 、 Width 、 Content-Type （只有三个值 application/x www-form-urlencoded 、 multipart/form-data 、 text/plain）
+>
+>预检请求
+>
+>只要符合以下任何一个条件的请求，都需要进行预检请求：
+>① 请求方式为 GET 、 POST 、 HEAD 之外的请求 Method 类型
+>② 请求头中 包含自定义头部字段
+>③ 向服务器发送 了 application/json 格式的数据在浏览器与服务器正式通信之前，浏览器会先发送 OPTION 请求进行预检，以获知服务器是否允许该实际请求 ，所以这一次的 OPTION 请求称为“预检请求”。 服务器成功响应预检请求后，才会发送真正的请求，并且携带真实数据 。
+
+### jsonp接口
+
+概念：浏览器端通过 <script> 标签的 src 属性，请求服务器上的数据，同时，服务器返回一个函数的调用。这种请求数据的方式叫做 JSONP 。
+特点：
+① JSONP 不属于真正的 Ajax 请求，因为它没有使用 XMLHttpRequest 这个对象。
+② SONP 仅支持 GET 请求，不支持 POST 、 PUT 、 DELETE 等请求。
+
+#### 实现 JSONP 接口的步骤
+
+>① 获取 客户端发送过来的 回调函数的名字
+>② 得到要 通过 JSONP 形式 发送给客户端的数据
+>③ 根据前两步得到的数据， 拼接出一个函数调用的字符串
+>④ 把上一步拼接得到的字符串，响应给客户端的 <script> 标签进行解析执行
+
+#### 服务器代码实现
+
+```js
+app.get('/api/jsonp', (req, res) => {
+    // 1.获取客户端发送过来的回调函数的名字
+    const funcName = req.query.callback
+    // 2.得到要通过 JSONP 形式发送给客户端的数据
+    const data = { name: 'zs' , age: 22 }
+    // 3.根据前两步得到的数据，拼接出一个函数调用的字符串
+    const scriptStr = `${funcName}(${JSON.stringify(data)})`
+    // 4.把上一步拼接得到的字符串，响应给客户端的 <script> 标签进行解析执行
+    res.send(scriptStr)
+})
+```
+
+#### 在网页实现jsonp
+
+调用$.ajax() 函数， 提供 JSONP 的配置选项 ，从而发起 JSONP 请求，示例代码如下：
+
+```js
+$('#btnJsonp').on('click', function () {
+    $.ajax({
+        method: 'GET',
+        url: 'http://127.0.0.1/api/jsonp',
+        dataType: 'jsonp',
+        success: function (res) {
+            console.log(res)
+        }
+    })
+})
+```
+

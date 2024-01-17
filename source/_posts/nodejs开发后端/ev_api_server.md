@@ -7,7 +7,7 @@ categories:
 tags:
 - express
 - nodejs
-  typora-root-url: ..\..
+typora-root-url: ..\..
 ---
 
 ## Headline

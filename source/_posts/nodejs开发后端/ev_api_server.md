@@ -74,8 +74,10 @@ app.use(express.urlencoded({ extended: false }))
 ### 1.4 初始化路由相关的文件夹
 
 1. 在项目根目录中，新建 `router` 文件夹，用来存放所有的`路由`模块
+   
    > 路由模块中，只存放客户端的请求与处理函数之间的映射关系
 2. 在项目根目录中，新建 `router_handler` 文件夹，用来存放所有的 `路由处理函数模块`
+   
    > 路由处理函数模块中，专门负责存放每个路由对应的处理函数
 
 ### 1.5 初始化用户路由模块
@@ -153,7 +155,7 @@ module.exports = router
 ### 2.1 新建 ev_users 表
 
 1. 在 `my_db_01` 数据库中，新建 `ev_users` 表如下：
-   ![ev_users表结构](./images/1.jpg)
+   ![image-20240118114848894](/image/express/image-20240118114848894.png)
 
 ### 2.2 安装并配置 mysql 模块
 
